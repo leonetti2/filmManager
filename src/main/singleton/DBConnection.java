@@ -50,9 +50,6 @@ public class DBConnection {
         return connection;
     }
 
-    /**
-     * Crea la tabella dei libri se non esiste
-     */
     private void createTableIfNotExists() throws SQLException{
         String query = """
                 CREATE TABLE IF NOT EXISTS film(
@@ -60,7 +57,7 @@ public class DBConnection {
                     regista TEXT NOT NULL,
                     anno INTEGER,
                     genere TEXT NOT NULL,
-                    valutazione INTEGER,
+                    valutazione INTEGER CHECK(valutazione BETWEEN 1 AND 5),
                     stato TEXT NOT NULL,
                     PRIMARY KEY (titolo, regista)
                     );
@@ -70,9 +67,6 @@ public class DBConnection {
         }
     }
 
-    /**
-     * Crea un libro nel db
-     */
     public void addFilm(Film film){
         String query = "INSERT OR IGNORE INTO film (titolo, regista, anno, genere, valutazione, stato) VALUES (?, ?, ?, ?, ?, ?)";
         try(PreparedStatement pstmt = connection.prepareStatement(query)){
@@ -88,9 +82,6 @@ public class DBConnection {
         }
     }
 
-    /**
-     * Restituisce la lista dei libri salvati nel db
-     */
     public List<Film> getAllFilms(){
         List<Film> films = new ArrayList<>();
         String query = "SELECT titolo, regista, anno, genere, valutazione, stato FROM film";
@@ -115,15 +106,11 @@ public class DBConnection {
         return films;
     }
 
-    /**
-     * Aggiorna un libro nel db usando id come chiave
-     */
     public boolean updateFilm(Film film, Film oldFilm){
         if(!film.getTitolo().equalsIgnoreCase(oldFilm.getTitolo()) ||
            !film.getRegista().equalsIgnoreCase(oldFilm.getRegista())){
             return false;
         }
-
 
         String query = """
                 UPDATE film 
@@ -153,9 +140,6 @@ public class DBConnection {
         return false;
     }
 
-    /**
-     * Elimina un film dal db
-     */
     public void deleteFilm(Film film){
         String query = "DELETE FROM film WHERE titolo = ? AND regista = ?";
         try(PreparedStatement pstmt = connection.prepareStatement(query)){
@@ -171,7 +155,6 @@ public class DBConnection {
         if(connection != null){
             try {
                 connection.close();
-                System.out.println("Connessione SQLite chiusa.");
             }catch (SQLException e){
                 System.err.println("Errore durante la chiusura della connessione SQLite: " + e.getMessage());
             }

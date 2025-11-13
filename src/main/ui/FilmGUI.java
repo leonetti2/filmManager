@@ -85,7 +85,6 @@ public class FilmGUI extends JFrame implements FilmObserver {
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
         panel.add(searchPanel, BorderLayout.CENTER);
-        //ICONA LOGO
 
         return panel;
     }
